@@ -6,25 +6,30 @@ import { Gallery } from './ImageGallery.styled';
 
 export default class ImageGallery extends Component {
   state = {
-    data: [],
-    idle: '',
-    pending: '',
-    resolved: '',
-    rejected: '',
+    status: 'resolved',
   };
 
   async componentDidUpdate(prevProps) {
-    if (prevProps.options !== this.props.options) {
+    const { search, page, updateData } = this.props;
+
+    if (prevProps.search !== search || prevProps.page !== page) {
       try {
         const data = await axios.get('https://pixabay.com/api/', {
           params: {
             key: '27389649-f5df395754432ead8290902de',
-            q: this.props.options.search,
-            page: this.props.options.page,
+            q: search,
+            page: page,
             per_page: 12,
           },
         });
-        this.setState({ data: [...data.data.hits] });
+
+        if (data.data.hits.length === 0) {
+          this.setState({ status: 'rejected' });
+          return;
+        }
+
+        this.setState({ status: 'resolved' });
+        updateData(data.data.hits);
         console.log(data);
       } catch (error) {
         console.log(error);
@@ -33,12 +38,18 @@ export default class ImageGallery extends Component {
   }
 
   render() {
-    return (
-      <Gallery>
-        {this.state.data.map(({ id, webformatURL }) => (
-          <ImageGalleryItem key={id} content={webformatURL} />
-        ))}
-      </Gallery>
-    );
+    if (this.state.status === 'rejected') {
+      return <p>Sorry, we find nothing. Try again</p>;
+    }
+
+    if (this.state.status === 'resolved') {
+      return (
+        <Gallery>
+          {this.props.data.map(({ id, webformatURL }) => (
+            <ImageGalleryItem key={id} content={webformatURL} />
+          ))}
+        </Gallery>
+      );
+    }
   }
 }
