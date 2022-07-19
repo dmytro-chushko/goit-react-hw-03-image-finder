@@ -11,8 +11,8 @@ const getImageCollection = async (search, page) => {
         per_page: 12,
       },
     });
-
-    return data.data.hits;
+    console.log(data.data);
+    return { array: data.data.hits, total: data.data.totalHits };
   } catch (error) {
     Notify.failure(error.message);
   }

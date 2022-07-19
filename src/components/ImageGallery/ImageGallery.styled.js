@@ -13,14 +13,14 @@ export const Gallery = styled.ul`
   margin-right: auto;
 `;
 
-export const LoaderContainer = styled.div`
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-`;
+// export const LoaderContainer = styled.div`
+//   display: block;
+//   margin-left: auto;
+//   margin-right: auto;
+// `;
 
-export const NotFound = styled.div`
-  margin: auto;
-  font-size: 30px;
-  color: #3f51b5;
-`;
+// export const NotFound = styled.div`
+//   margin: auto;
+//   font-size: 30px;
+//   color: #3f51b5;
+// `;

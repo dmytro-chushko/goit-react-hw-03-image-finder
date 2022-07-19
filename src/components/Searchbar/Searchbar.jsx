@@ -10,9 +10,8 @@ import {
 } from './Searchbar.styled';
 
 const Searchbar = ({ onSubmit }) => {
-  const handleSubmit = ({ search }, { resetForm }) => {
+  const handleSubmit = ({ search }) => {
     onSubmit(search);
-    resetForm();
   };
 
   return (
