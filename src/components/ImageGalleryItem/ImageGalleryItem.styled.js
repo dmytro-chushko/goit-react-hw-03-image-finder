@@ -7,6 +7,7 @@ export const GalleryItem = styled.li`
 `;
 
 export const GalleryItemImage = styled.img`
+  display: block;
   width: 100%;
   height: 260px;
   object-fit: cover;

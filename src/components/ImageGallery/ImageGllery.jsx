@@ -1,55 +1,78 @@
-import axios from 'axios';
+import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
+import { BallTriangle } from 'react-loader-spinner';
 import { Component } from 'react';
+import * as Scroll from 'react-scroll';
 
+import getImageCollection from 'helpers/getImageCollection';
 import ImageGalleryItem from 'components/ImageGalleryItem';
-import { Gallery } from './ImageGallery.styled';
+import { Gallery, LoaderContainer, NotFound } from './ImageGallery.styled';
 
 export default class ImageGallery extends Component {
   state = {
     status: 'resolved',
+    panding: false,
   };
 
   async componentDidUpdate(prevProps) {
-    const { search, page, updateData } = this.props;
+    const { search, page, loadMoreData } = this.props;
 
-    if (prevProps.search !== search || prevProps.page !== page) {
-      try {
-        const data = await axios.get('https://pixabay.com/api/', {
-          params: {
-            key: '27389649-f5df395754432ead8290902de',
-            q: search,
-            page: page,
-            per_page: 12,
-          },
-        });
+    try {
+      if (prevProps.search !== search || prevProps.page !== page) {
+        window.scrollBy(0, 600);
+        this.setState({ panding: true });
 
-        if (data.data.hits.length === 0) {
-          this.setState({ status: 'rejected' });
-          return;
+        const data = await getImageCollection(search, page);
+
+        this.setState({ panding: false });
+
+        if (data) {
+          if (data.length === 0) {
+            this.setState({ status: 'rejected' });
+            return;
+          }
+
+          loadMoreData(data);
+          this.setState({ status: 'resolved' });
         }
-
-        this.setState({ status: 'resolved' });
-        updateData(data.data.hits);
-        console.log(data);
-      } catch (error) {
-        console.log(error);
+        const scroll = Scroll.animateScroll;
+        scroll.scrollToBottom();
       }
+    } catch (error) {
+      console.log(error);
     }
   }
 
   render() {
-    if (this.state.status === 'rejected') {
-      return <p>Sorry, we find nothing. Try again</p>;
-    }
+    return (
+      <>
+        {this.state.status === 'rejected' && (
+          <NotFound>Sorry, we find nothing. Try another request</NotFound>
+        )}
 
-    if (this.state.status === 'resolved') {
-      return (
-        <Gallery>
-          {this.props.data.map(({ id, webformatURL }) => (
-            <ImageGalleryItem key={id} content={webformatURL} />
-          ))}
-        </Gallery>
-      );
-    }
+        {this.state.status === 'resolved' && (
+          <Gallery>
+            {this.props.data.map(({ id, webformatURL, tags }) => (
+              <ImageGalleryItem
+                key={id}
+                image={webformatURL}
+                id={id}
+                alt={tags}
+                getModalImage={this.props.getModalImage}
+              />
+            ))}
+          </Gallery>
+        )}
+        {this.state.panding && (
+          <LoaderContainer>
+            <BallTriangle
+              height="80"
+              width="80"
+              color="#3f51b5"
+              ariaLabel="three-dots-loading"
+            />
+          </LoaderContainer>
+        )}
+      </>
+    );
   }
 }

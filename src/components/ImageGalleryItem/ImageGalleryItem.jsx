@@ -1,8 +1,8 @@
 import { GalleryItem, GalleryItemImage } from './ImageGalleryItem.styled';
 
-const ImageGalleryItem = ({ content }) => (
+const ImageGalleryItem = ({ image, id, alt, getModalImage }) => (
   <GalleryItem>
-    <GalleryItemImage src={content} alt="#" />
+    <GalleryItemImage src={image} alt={alt} onClick={() => getModalImage(id)} />
   </GalleryItem>
 );
 
