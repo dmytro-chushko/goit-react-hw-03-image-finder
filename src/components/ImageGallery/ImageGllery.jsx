@@ -2,9 +2,12 @@ import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import { BallTriangle } from 'react-loader-spinner';
 import { Component } from 'react';
 import * as Scroll from 'react-scroll';
+import PropTypes from 'prop-types';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 import getImageCollection from 'helpers/getImageCollection';
 import ImageGalleryItem from 'components/ImageGalleryItem';
+
 import { Gallery, LoaderContainer, NotFound } from './ImageGallery.styled';
 
 export default class ImageGallery extends Component {
@@ -38,7 +41,7 @@ export default class ImageGallery extends Component {
         scroll.scrollToBottom();
       }
     } catch (error) {
-      console.log(error);
+      Notify.failure(error.message);
     }
   }
 
@@ -76,3 +79,17 @@ export default class ImageGallery extends Component {
     );
   }
 }
+
+ImageGallery.propTypes = {
+  search: PropTypes.string.isRequired,
+  page: PropTypes.number.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      webformatURL: PropTypes.string.isRequired,
+      tags: PropTypes.string.isRequired,
+    })
+  ),
+  loadMoreData: PropTypes.func.isRequired,
+  getModalImage: PropTypes.func.isRequired,
+};
